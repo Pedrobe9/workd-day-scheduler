@@ -13,7 +13,7 @@ currentDayEl.text(currentDate);
 // time using moment.js
 let time = moment().format("hh A");
 
-
+function drawRow(timeSlotText) {
   // .description determines how text is wrapped in text area
   let inputNote = $('<textarea rows="2" cols="40" class="description">');
   // Time slot creation
@@ -37,9 +37,26 @@ let time = moment().format("hh A");
   let tableRow = $('<div class="row">');
   tableRow.append(timeSlot, inputNote, saveBtn);
   containerDiv.append(tableRow);
+}
 
-
-
+// Draw the table calling function each hour
+let timeS;
+for (let i = 0; i < 9; i++) {
+    timeS = i + 9;
+    // Make time to have same format prepending a 0 when needed
+    if (timeS < 10) {
+        timeSlotText = "0" + timeS + " AM";
+    } else if (timeS > 10 && timeS < 12) {
+        timeSlotText = timeS + " AM";
+    } else if (timeS > 12) {
+        timeSlotText = "0" + (timeS - 12) + " PM";
+    } else {
+        timeSlotText = timeS + " PM";
+    }
+    drawRow(timeSlotText);
+    console.log("check:", timeSlotText, time);
+    console.log("check:", timeSlotText == time);
+}
 
 
 
