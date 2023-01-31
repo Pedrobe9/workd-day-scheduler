@@ -5,6 +5,8 @@ $(document).ready(function(){
   let containerDiv = $("div:first");
   //Make save button with class .saveBtn
   let saveBtn;
+  // Array to store in LocalStorage
+  let todos = [];
   containerDiv.addClass('time-block')
 
   let currentDate = moment().format("dddd, MMMM Do");
@@ -16,13 +18,15 @@ $(document).ready(function(){
 
   function drawRow(timeSlotText) {
     // .description determines how text is wrapped in text area
-    let inputNote = $('<textarea rows="2" cols="40" class="description">');
+    let inputArea = $('<textarea cols="40" class="description">');
+    let inputNote = inputArea.val();
+    //console.log("inputArea: ", inputArea);
+    //console.log("inputNote: ", inputArea.val());
     // Time slot creation
     let timeSlot = $('<p class="hour">');
     timeSlot.text(timeSlotText);
 
     //Color of textarea changes with time
-    console.log(time);
     let currentClass;
 
     // Work out time for comparison using time24.
@@ -34,8 +38,7 @@ $(document).ready(function(){
     } else {
       timeCompSlot = parseInt(timeSlot.text().slice(0, 2)) + 12;
     }
-    console.log("color", timeCompSlot, time24);
-    console.log("color", timeCompSlot < time24);
+
     if (timeCompSlot < time24) {
         currentClass = "past";
     } else if (timeCompSlot == time24) {
@@ -43,14 +46,51 @@ $(document).ready(function(){
     } else {
         currentClass = "future";
     }
-    inputNote.addClass(currentClass);
+    inputArea.addClass(currentClass);
+
     //Make save button with class .saveBtn
-    saveBtn = $('<i class="saveBtn fa-solid fa-floppy-disk"></i>');
+    //saveBtn = $('<button type="button" class="saveBtn"><i class="fa-solid fa-floppy-disk"></i></button>');
+    saveBtn = $('<i class="fas fa-save saveBtn"></i>');
+    saveBtn.attr('data-index', 'slot' + timeCompSlot);
     // construct the row 
     let tableRow = $('<div class="row">');
-    tableRow.append(timeSlot, inputNote, saveBtn);
+    tableRow.append(timeSlot, inputArea, saveBtn);
     containerDiv.append(tableRow);
+    var storedTodos = JSON.parse(localStorage.getItem("todos"));
+    // If todos were retrieved from localStorage, update the todos array to it
+    if (storedTodos !== null) {
+      todos = storedTodos;
+    }
+    console.log("$('.time-block'):", $('.time-block'));
+    console.log("containerDiv'):", containerDiv);
   }
+
+  //Store data in localStore
+  function storeData(event) {
+    //event.preventDefault();
+    console.log("element: storeData before");
+    var element = event.target;
+    console.log("event.target:", event.target);
+    // If that element is a button...
+    if (element.matches("button") === true) {
+      // Identify which slot was clicked
+      var index = element.attr('data-index');
+      console.log("element: ", element);
+      // Store updated data in localStorage, check if previous data
+      todos = window.localStorage.getItem('todos');
+      plannerData = JSON.parse(todos);
+      // Get inputNote into array to store
+      console.log("ok");
+      var todo = {index:inputNote};
+      todos.push(todo);
+      // Stringify and set data key in localStorage to an array
+      window.localStorage.setItem("todos", JSON.stringify(todos));
+
+
+    }
+    
+  }
+  
 
   // Draw the table calling function each hour
   let timeS;
@@ -67,47 +107,30 @@ $(document).ready(function(){
           timeSlotText = timeS + " PM";
       }
       drawRow(timeSlotText);
-      console.log("check:", timeSlotText, time);
-      console.log("check:", typeof(timeSlotText), typeof(time));
-      console.log("check:", timeSlotText === time);
   }
+  console.log("element: bclick");
+  saveBtn.on("click", storeData());
+  
 
-
-
-/*/ Borders of table and position
-let tableFrame = $('td');
-tableFrame.css({"height":"50px", "border":"1px solid black", "padding":"15px"});
-tableRowsSection.parent().css({"display":"flex", "justify-content":"center"});
-tableRowsSection.css({"justify-content":"center"});
-
-// Dimension of central column
-$('.c2').css("width", "400px");
-// Right column color
-$('.c3').css("background-color", "#82d4ef");
-$('.c3 a').css({"color":"white", "background-color":"#82d4ef"});
-$("#r1c1").text()
-let time = moment().format("H A");
-let timeSlot = ["#r1c1", "#r2c1", "#r3c1", "#r4c1", "#r5c1", "#r6c1", "#r7c1", "#r8c1", "#r9c1"];
-let textSlot = ["#r1c2", "#r2c2", "#r3c2", "#r4c2", "#r5c2", "#r6c2", "#r7c2", "#r8c2", "#r9c2"];
-console.log($("#r3c1").text());
-console.log(time);
-
-// Color of central column
-$('.c2').css("background-color", "rgba(46, 240, 8, 0.5)");
-for (let i = 0; i < 8; i++) {
-    if ($(timeSlot[i]).text() == time) {
-        console.log($(timeSlot[i]).text() == time);
-        $(textSlot[i]).css("background-color", "rgba(250, 0, 0, 0.5)");
-        //$(textSlot[i]).prevAll().css("background-color", "rgba(250, 0, 0, 0.5)");
-        for (let j = 0; j < i; j++) {
-          $(textSlot[j]).css("background-color", "rgba(20, 20, 20, 0.3)");
-        }
-    }  
-}*/
-
-
-
-
-
+  /*saveBtn.on("click", function(event) {
+  //event.preventDefault();
+  console.log("element: storeData before");
+  var element = event.target;
+  // If that element is a button...
+  if (element.matches("button") === true) {
+    // Identify which slot was clicked
+    var index = element.attr('data-index');
+    console.log("element: ", element);
+    // Store updated data in localStorage, check if previous data
+    todos = window.localStorage.getItem('todos');
+    plannerData = JSON.parse(todos);
+    // Get inputNote into array to store
+    console.log("ok");
+    var todo = {index:inputNote};
+    todos.push(todo);
+    // Stringify and set data key in localStorage to an array
+    window.localStorage.setItem("todos", JSON.stringify(todos));
+    }
+  });*/
 
 });

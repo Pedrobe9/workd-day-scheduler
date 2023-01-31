@@ -75,6 +75,11 @@ textarea {
   justify-content: center;
 }
 
+/* Darker background on mouse-over */
+.saveBtn:hover {
+  background-color: dodgerblue;
+}
+
 .saveBtn i:hover {
   font-size: 20px;
   transition: all 0.3s ease-in-out;
