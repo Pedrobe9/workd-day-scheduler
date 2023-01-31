@@ -1,62 +1,76 @@
 $(document).ready(function(){
 
-// Reference to DOM elements
-let currentDayEl = $('#currentDay');
-let containerDiv = $("div:first");
-//Make save button with class .saveBtn
-let saveBtn;
-containerDiv.addClass('time-block')
-
-let currentDate = moment().format("dddd, MMMM Do");
-currentDayEl.text(currentDate);
-
-// time using moment.js
-let time = moment().format("hh A");
-
-function drawRow(timeSlotText) {
-  // .description determines how text is wrapped in text area
-  let inputNote = $('<textarea rows="2" cols="40" class="description">');
-  // Time slot creation
-  let timeSlot = $('<p class="hour">');
-  timeSlot.text('timeSlotText');
-
-  //Color of textarea changes with time
-  console.log(time);
-  let currentClass;
-  if (timeSlot.text() < time) {
-      currentClass = "past";
-  } else if (timeSlot.text() == time) {
-      currentClass = "present";
-  } else {
-      currentClass = "past";
-  }
-  inputNote.addClass(currentClass);
+  // Reference to DOM elements
+  let currentDayEl = $('#currentDay');
+  let containerDiv = $("div:first");
   //Make save button with class .saveBtn
-  saveBtn = $('<i class="saveBtn fa-solid fa-floppy-disk"></i>');
-  // construct the row 
-  let tableRow = $('<div class="row">');
-  tableRow.append(timeSlot, inputNote, saveBtn);
-  containerDiv.append(tableRow);
-}
+  let saveBtn;
+  containerDiv.addClass('time-block')
 
-// Draw the table calling function each hour
-let timeS;
-for (let i = 0; i < 9; i++) {
-    timeS = i + 9;
-    // Make time to have same format prepending a 0 when needed
-    if (timeS < 10) {
-        timeSlotText = "0" + timeS + " AM";
-    } else if (timeS > 10 && timeS < 12) {
-        timeSlotText = timeS + " AM";
-    } else if (timeS > 12) {
-        timeSlotText = "0" + (timeS - 12) + " PM";
+  let currentDate = moment().format("dddd, MMMM Do");
+  currentDayEl.text(currentDate);
+
+  // time using moment.js
+  let time = moment().format("hh A");
+  let time24 = moment().format("H");
+
+  function drawRow(timeSlotText) {
+    // .description determines how text is wrapped in text area
+    let inputNote = $('<textarea rows="2" cols="40" class="description">');
+    // Time slot creation
+    let timeSlot = $('<p class="hour">');
+    timeSlot.text(timeSlotText);
+
+    //Color of textarea changes with time
+    console.log(time);
+    let currentClass;
+
+    // Work out time for comparison using time24.
+    let timeCompSlot;
+    if (timeSlot.text().includes('AM')) {
+      timeCompSlot = parseInt(timeSlot.text().slice(0, 2));
+    } else if (timeSlot.text() == '12 PM') {
+      timeCompSlot = 12;
     } else {
-        timeSlotText = timeS + " PM";
+      timeCompSlot = parseInt(timeSlot.text().slice(0, 2)) + 12;
     }
-    drawRow(timeSlotText);
-    console.log("check:", timeSlotText, time);
-    console.log("check:", timeSlotText == time);
-}
+    console.log("color", timeCompSlot, time24);
+    console.log("color", timeCompSlot < time24);
+    if (timeCompSlot < time24) {
+        currentClass = "past";
+    } else if (timeCompSlot == time24) {
+        currentClass = "present";
+    } else {
+        currentClass = "future";
+    }
+    inputNote.addClass(currentClass);
+    //Make save button with class .saveBtn
+    saveBtn = $('<i class="saveBtn fa-solid fa-floppy-disk"></i>');
+    // construct the row 
+    let tableRow = $('<div class="row">');
+    tableRow.append(timeSlot, inputNote, saveBtn);
+    containerDiv.append(tableRow);
+  }
+
+  // Draw the table calling function each hour
+  let timeS;
+  for (let i = 0; i < 9; i++) {
+      timeS = i + 9;
+      // Make time to have same format prepending 0 when needed
+      if (timeS < 10) {
+          timeSlotText = "0" + timeS + " AM";
+      } else if (timeS >= 10 && timeS < 12) {
+          timeSlotText = timeS + " AM";
+      } else if (timeS > 12) {
+          timeSlotText = "0" + (timeS - 12) + " PM";
+      } else {
+          timeSlotText = timeS + " PM";
+      }
+      drawRow(timeSlotText);
+      console.log("check:", timeSlotText, time);
+      console.log("check:", typeof(timeSlotText), typeof(time));
+      console.log("check:", timeSlotText === time);
+  }
 
 
 
