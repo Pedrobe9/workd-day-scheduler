@@ -19,9 +19,7 @@ https://github.com/Pedrobe9/workd-day-scheduler
 
 A screenshot can be seen underneath.
 
-    ```md
-    ![alt text](assets/scheduler.png)
-    ```
+![Screenshot of application.](assets/scheduler.png)
 
 ## Credits
 
