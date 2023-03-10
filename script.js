@@ -3,22 +3,21 @@ $(document).ready(function(){
   // Reference to DOM elements
   let currentDayEl = $('#currentDay');
   let containerDiv = $("div:first");
-  //Make save button with class .saveBtn
+  // Global variables
   let saveBtn;
   var inputArea;
   var index;
   var indexId;
   // Array to store in LocalStorage
   var todos = [];
-  //containerDiv.addClass('time-block')
-
-  let currentDate = moment().format("dddd, MMMM Do");
-  currentDayEl.text(currentDate);
 
   // time using moment.js
+  let currentDate = moment().format("dddd, MMMM Do");
+  currentDayEl.text(currentDate);
   let date = moment().format("DD-MM-YYYY");
   let time24 = moment().format("H");
 
+  //function to display the rows making the scheduler
   function drawRow(timeSlotText) {
     //Color of textarea changes with time
     let currentClass;
@@ -26,6 +25,7 @@ $(document).ready(function(){
      // Time slot creation
     let timeSlot = $('<p class="hour">');
     timeSlot.text(timeSlotText);
+
     // Work out time for comparison using time24.
     let timeCompSlot;
     if (timeSlot.text().includes('AM')) {
@@ -68,24 +68,19 @@ $(document).ready(function(){
     if (storedTodos !== null) {
       todos = storedTodos;
     }
-    //console.log("$('.time-block'):", $('.time-block'));
-    //console.log("containerDiv'):", containerDiv);
-    //console.log("inputNote-drawrows:", inputNote);
   }
 
   //Store data in localStore
   function storeData(event) {
-    console.log("element: click before event.target");
     var element = event.target;
-    console.log("event.target:", event.target);
+
     // If that element is a <i>...
     if (element.matches("I") === true) {
       // Identify which slot was clicked
       index = element.getAttribute('data-index');
       indexId = '#' + index;
-      console.log("indexId: ", indexId);
+
       // Get inputNote into array to store
-      console.log("$(indexId).val():", $(indexId).val());
       var obj = {};
       obj[index] = $(indexId).val();
       obj.date = date;
@@ -95,7 +90,7 @@ $(document).ready(function(){
       if (todos === null) {
       todos = [];
       }
-      console.log("todo:", obj, "todos:", todos);
+
       // Adding item searched to array if it is not already in it
       if (obj !== null && obj !== undefined) {
         todos.push(obj);
@@ -103,29 +98,7 @@ $(document).ready(function(){
         localStorage.setItem('todos', JSON.stringify(todos));
   
       }
-
-
     }
-    /*//event.preventDefault();
-    console.log("element: storeData before");
-    var element = event.target;
-    console.log("event.target:", event.target);
-    // If that element is a button...
-    if (element.matches("button") === true) {
-      // Identify which slot was clicked
-      var index = element.attr('data-index');
-      console.log("element: ", element);
-      // Store updated data in localStorage, check if previous data
-      todos = window.localStorage.getItem('todos');
-      plannerData = JSON.parse(todos);
-      // Get inputNote into array to store
-      console.log("ok");
-      var todo = {index:inputNote};
-      todos.push(todo);
-      // Stringify and set data key in localStorage to an array
-      window.localStorage.setItem("todos", JSON.stringify(todos));
-    }*/
-    
   }
   
 
@@ -145,58 +118,29 @@ $(document).ready(function(){
       }
       drawRow(timeSlotText);
   }
-  console.log("element: bclick");
-  //saveBtn.on("click", storeData());
+
 
   function dataInStore() {
+    // Check if there is data in locaStore
     todos = window.localStorage.getItem('todos');
     todos = JSON.parse(todos);
-    console.log("dataInStore-midle1-todos:", todos);
+    // If there is data, retrieve and display it on the scheduler
     if(todos) {
-      console.log("todos[0].date", todos[0].date);
+      //Loop through data and scheduler rows and match both
       for(let i = 0; i < todos.length; i++) {
         if(todos[i].date === date) {
           for(let j = 9; j < 18; j++) {
+            // Display data in right row of scheduler
             if(todos[i]['slot' + j]) {
-              console.log("dataInStore-midle2", todos[i]['slot' + j]);
               $('#slot' + j).val(todos[i]['slot' + j]);
             }
           }
-
-        
-          //console.log(todos[i][index], "---", $(indexId), "-----", $(indexId).val(todos[i][index]));
-        
-        //As seen in https://api.jquery.com/jquery.each/   (jQuery.each(array, callback))
-        /*jQuery.each('textarea', function(txtA) {
-          let txtArea = $('textarea')[txtA];
-          console.log("dataInStore-midle3", txtArea, "tid:", txtArea.getAttribute('id'));
-          $('#' + txtArea.getAttribute('id')).val(todos[txtArea.getAttribute('id')]);
-          console.log("dataInStore-end");
-        })*/
         }
       }
-
     }
   }
   dataInStore();
 
-  containerDiv.on("click", storeData);/*function(event) {
-  //event.preventDefault();
-  console.log("element: click before event.target");
-  var element = event.target;
-  // If that element is a <i>...
-  if (element.matches("I") === true) {
-    // Identify which slot was clicked
-    var index = element.getAttribute('data-index');
-    var indexId = '#' + index;
-    console.log("indexId: ", indexId);
-    // Get inputNote into array to store
-    console.log("$(indexId).val():", $(indexId).val());
-    var todo = {index:$(indexId).val()};
-    todos.push(todo);
-    // Stringify and set data key in localStorage to an array
-    window.localStorage.setItem("todos", JSON.stringify(todos));
-    }
-  });*/
+  containerDiv.on("click", storeData);
 
 });
