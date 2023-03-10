@@ -151,15 +151,16 @@ $(document).ready(function(){
   function dataInStore() {
     todos = window.localStorage.getItem('todos');
     todos = JSON.parse(todos);
-    let keys = ['slot9', 'slot10', 'slot11', 'slot12', 'slot13', 'slot14', 'slot15', 'slot16', 'slot17']
     console.log("dataInStore-midle1-todos:", todos);
     if(todos) {
       console.log("todos[0].date", todos[0].date);
       for(let i = 0; i < todos.length; i++) {
         if(todos[i].date === date) {
           for(let j = 9; j < 18; j++) {
-            console.log("dataInStore-midle2", todos[i]['slot' + j]);
-            $('#slot' + j).val(todos[i]['slot' + j]);
+            if(todos[i]['slot' + j]) {
+              console.log("dataInStore-midle2", todos[i]['slot' + j]);
+              $('#slot' + j).val(todos[i]['slot' + j]);
+            }
           }
 
         
