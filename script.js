@@ -5,30 +5,25 @@ $(document).ready(function(){
   let containerDiv = $("div:first");
   //Make save button with class .saveBtn
   let saveBtn;
+  var inputArea;
   // Array to store in LocalStorage
-  let todos = [];
-  containerDiv.addClass('time-block')
+  var todos = [];
+  //containerDiv.addClass('time-block')
 
   let currentDate = moment().format("dddd, MMMM Do");
   currentDayEl.text(currentDate);
 
   // time using moment.js
-  let time = moment().format("hh A");
+  let date = moment().format("DD-MM-YYYY");
   let time24 = moment().format("H");
 
   function drawRow(timeSlotText) {
-    // .description determines how text is wrapped in text area
-    let inputArea = $('<textarea cols="40" class="description">');
-    let inputNote = inputArea.val();
-    //console.log("inputArea: ", inputArea);
-    //console.log("inputNote: ", inputArea.val());
-    // Time slot creation
-    let timeSlot = $('<p class="hour">');
-    timeSlot.text(timeSlotText);
-
     //Color of textarea changes with time
     let currentClass;
 
+     // Time slot creation
+    let timeSlot = $('<p class="hour">');
+    timeSlot.text(timeSlotText);
     // Work out time for comparison using time24.
     let timeCompSlot;
     if (timeSlot.text().includes('AM')) {
@@ -46,8 +41,16 @@ $(document).ready(function(){
     } else {
         currentClass = "future";
     }
+
+    // .description determines how text is wrapped in text area
+    inputArea = $('<textarea cols="40" class="description">');
+    //inputNote = inputArea.val();
+
+    inputArea.attr('id', 'slot' + timeCompSlot);
+    //console.log("inputNote: ", inputArea.val());
     inputArea.addClass(currentClass);
 
+    console.log("inputArea: ", inputArea);
     //Make save button with class .saveBtn
     //saveBtn = $('<button type="button" class="saveBtn"><i class="fa-solid fa-floppy-disk"></i></button>');
     saveBtn = $('<i class="fas fa-save saveBtn"></i>');
@@ -56,18 +59,52 @@ $(document).ready(function(){
     let tableRow = $('<div class="row">');
     tableRow.append(timeSlot, inputArea, saveBtn);
     containerDiv.append(tableRow);
+    console.log("appendRow:", containerDiv);
+
     var storedTodos = JSON.parse(localStorage.getItem("todos"));
     // If todos were retrieved from localStorage, update the todos array to it
     if (storedTodos !== null) {
       todos = storedTodos;
     }
-    console.log("$('.time-block'):", $('.time-block'));
-    console.log("containerDiv'):", containerDiv);
+    //console.log("$('.time-block'):", $('.time-block'));
+    //console.log("containerDiv'):", containerDiv);
+    //console.log("inputNote-drawrows:", inputNote);
   }
 
   //Store data in localStore
   function storeData(event) {
-    //event.preventDefault();
+    console.log("element: click before event.target");
+    var element = event.target;
+    console.log("event.target:", event.target);
+    // If that element is a <i>...
+    if (element.matches("I") === true) {
+      // Identify which slot was clicked
+      var index = element.getAttribute('data-index');
+      var indexId = '#' + index;
+      console.log("indexId: ", indexId);
+      // Get inputNote into array to store
+      console.log("$(indexId).val():", $(indexId).val());
+      var obj = {};
+      obj[index] = $(indexId).val();
+      obj.date = date;
+      
+      // Check if there is any information in storage, if it is null, create array
+      todos = JSON.parse(localStorage.getItem('todos'));
+      if (todos === null) {
+      todos = [];
+      }
+      console.log("todo:", obj, "todos:", todos);
+      // Adding item searched to array if it is not already in it
+      if (obj !== null && obj !== undefined) {
+        todos.push(obj);
+        // Stringify and store it
+        localStorage.setItem('todos', JSON.stringify(todos));
+  
+      }
+
+
+    }
+    /*//event.preventDefault();
     console.log("element: storeData before");
     var element = event.target;
     console.log("event.target:", event.target);
@@ -85,9 +122,7 @@ $(document).ready(function(){
       todos.push(todo);
       // Stringify and set data key in localStorage to an array
       window.localStorage.setItem("todos", JSON.stringify(todos));
-
-
-    }
+    }*/
     
   }
   
@@ -109,24 +144,39 @@ $(document).ready(function(){
       drawRow(timeSlotText);
   }
   console.log("element: bclick");
-  saveBtn.on("click", storeData());
-  
+  //saveBtn.on("click", storeData());
 
-  /*saveBtn.on("click", function(event) {
-  //event.preventDefault();
-  console.log("element: storeData before");
-  var element = event.target;
-  // If that element is a button...
-  if (element.matches("button") === true) {
-    // Identify which slot was clicked
-    var index = element.attr('data-index');
-    console.log("element: ", element);
-    // Store updated data in localStorage, check if previous data
+  function dataInStore() {
     todos = window.localStorage.getItem('todos');
-    plannerData = JSON.parse(todos);
+    todos = JSON.parse(todos);
+    console.log("dataInStore-midle1");
+    if(todos === true) {
+      if(todos.date === date) {
+        console.log("dataInStore-midle2");
+        //As seen in https://api.jquery.com/jquery.each/   (jQuery.each(array, callback))
+        jQuery.each('textarea', function(txtA) {
+          let txtArea = $('textarea')[txtA];
+          $('#' + txtArea.getAttribute('id')).val(todos[txtArea.getAttribute('id')]);
+          console.log("dataInStore-end");
+        })
+      }
+    }
+  }
+  dataInStore();
+
+  containerDiv.on("click", storeData);/*function(event) {
+  //event.preventDefault();
+  console.log("element: click before event.target");
+  var element = event.target;
+  // If that element is a <i>...
+  if (element.matches("I") === true) {
+    // Identify which slot was clicked
+    var index = element.getAttribute('data-index');
+    var indexId = '#' + index;
+    console.log("indexId: ", indexId);
     // Get inputNote into array to store
-    console.log("ok");
-    var todo = {index:inputNote};
+    console.log("$(indexId).val():", $(indexId).val());
+    var todo = {index:$(indexId).val()};
     todos.push(todo);
     // Stringify and set data key in localStorage to an array
     window.localStorage.setItem("todos", JSON.stringify(todos));
