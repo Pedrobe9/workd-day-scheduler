@@ -6,6 +6,8 @@ $(document).ready(function(){
   //Make save button with class .saveBtn
   let saveBtn;
   var inputArea;
+  var index;
+  var indexId;
   // Array to store in LocalStorage
   var todos = [];
   //containerDiv.addClass('time-block')
@@ -79,8 +81,8 @@ $(document).ready(function(){
     // If that element is a <i>...
     if (element.matches("I") === true) {
       // Identify which slot was clicked
-      var index = element.getAttribute('data-index');
-      var indexId = '#' + index;
+      index = element.getAttribute('data-index');
+      indexId = '#' + index;
       console.log("indexId: ", indexId);
       // Get inputNote into array to store
       console.log("$(indexId).val():", $(indexId).val());
@@ -149,17 +151,30 @@ $(document).ready(function(){
   function dataInStore() {
     todos = window.localStorage.getItem('todos');
     todos = JSON.parse(todos);
-    console.log("dataInStore-midle1");
-    if(todos === true) {
-      if(todos.date === date) {
-        console.log("dataInStore-midle2");
+    let keys = ['slot9', 'slot10', 'slot11', 'slot12', 'slot13', 'slot14', 'slot15', 'slot16', 'slot17']
+    console.log("dataInStore-midle1-todos:", todos);
+    if(todos) {
+      console.log("todos[0].date", todos[0].date);
+      for(let i = 0; i < todos.length; i++) {
+        if(todos[i].date === date) {
+          for(let j = 9; j < 18; j++) {
+            console.log("dataInStore-midle2", todos[i]['slot' + j]);
+            $('#slot' + j).val(todos[i]['slot' + j]);
+          }
+
+        
+          //console.log(todos[i][index], "---", $(indexId), "-----", $(indexId).val(todos[i][index]));
+        
         //As seen in https://api.jquery.com/jquery.each/   (jQuery.each(array, callback))
-        jQuery.each('textarea', function(txtA) {
+        /*jQuery.each('textarea', function(txtA) {
           let txtArea = $('textarea')[txtA];
+          console.log("dataInStore-midle3", txtArea, "tid:", txtArea.getAttribute('id'));
           $('#' + txtArea.getAttribute('id')).val(todos[txtArea.getAttribute('id')]);
           console.log("dataInStore-end");
-        })
+        })*/
+        }
       }
+
     }
   }
   dataInStore();
